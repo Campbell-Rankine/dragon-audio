@@ -1,0 +1,16 @@
+[project]
+name = "dragon-audio"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "accelerate>=1.13.0",
+    "diffusers>=0.37.1",
+    "gradio>=6.15.2",
+    "moviepy>=2.2.1",
+    "tensorflow>=2.21.0",
+    "tensorflow-hub>=0.16.1",
+    "torch>=2.12.0",
+    "transformers>=5.9.0",
+]

@@ -1,0 +1,10 @@
+services:
+  dragon_audio_render:
+    image: dragon_audio_render:latest
+    build:
+      context: ./
+      dockerfile: ./env/Dockerfile
+    ports:
+      - 8080:7860
+    volumes:
+      - ./output:/app/output
