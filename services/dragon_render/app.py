@@ -43,7 +43,7 @@ def add_prompt(
     prompt: str,
     duration: float,
 ):
-    pipeline.request_frame(
+    pipeline.add_prompt(
         prompt,
         duration
     )

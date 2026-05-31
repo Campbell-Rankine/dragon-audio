@@ -1,0 +1,3 @@
+[submodule "services/dragon_render/Lens"]
+	path = services/dragon_render/Lens
+	url = git@github.com:microsoft/Lens.git

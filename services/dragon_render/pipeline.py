@@ -37,6 +37,14 @@ class DragonRenderPipeline:
             These images will be passed to another model to interpolate between frames, so fine detail is discouraged. \
             user prompt: '{prompt}'. Please generate in {self.image_quality} quality"
 
+    def add_prompt(self, prompt: str, duration: float = 1.0, img_bytes: bytes = None):
+        if img_bytes is not None:
+            self.total_duration += duration/2
+            self.prompts.append((self.fmt_prompt(prompt), duration/2))
+            self.queue.add_frame(img_bytes, duration)
+        else:
+            self.request_frame(prompt, duration)
+
     def request_frame(self, prompt: str, duration: float = 1.0):
         # we will interpolate between frames, so we only need half the duration for each frame
         duration = duration/2
