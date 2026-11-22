@@ -1,12 +1,13 @@
+# CPU-only torch wheels (skips ~2.5GB of CUDA libs; free hosts have no GPU)
+--extra-index-url https://download.pytorch.org/whl/cpu
 scipy
 scikit-learn
 moviepy
 cffi
 gradio
-ffmpeg
 torch==2.8.0
-torchaudio
-torchvision
+# HDEMUCS pipelines were removed from torchaudio in 2.9, keep in lockstep with torch
+torchaudio==2.8.0
 plotly
 mir_eval
 pyflac

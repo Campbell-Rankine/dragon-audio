@@ -1,6 +1,18 @@
 import gradio as gr
 import os
-from pydub import AudioSegment  # for combining stems
+import soundfile as sf
+
+from src.utils.io import get_song_name
+
+STEM_ORDER = ["vocals", "drums", "bass", "other"]
+
+
+def upload_output_root(file: str) -> str:
+    """Per-upload output folder. Gradio stores each upload in its own folder
+    named by a hash of the file, so reusing that name keeps two users who
+    upload different songs with the same filename from overwriting each
+    other's stems."""
+    return f"./output/{os.path.basename(os.path.dirname(file))}"
 
 
 def ui():
@@ -32,11 +44,14 @@ def ui():
 
         # ---- Stem splitting ----
         def on_submit(file):
+            if file is None:  # upload was cleared
+                return [None, None, None, None]
+
             from src.stems import StemSplitter
 
             splitter = StemSplitter(load_on_init=True)
 
-            labels, audios, files = splitter(file, output_path="./output")
+            labels, audios, files = splitter(file, output_path=upload_output_root(file))
             print(files, audios)
             del splitter
 
@@ -70,24 +85,31 @@ def ui():
 
         # ---- Stem combining ----
         def combine_stems(file, selected):
+            if file is None:
+                raise gr.Error("Upload and split a song before combining stems.")
             if not selected:
-                return None
+                raise gr.Error("Select at least one stem to combine.")
 
-            combined = None
+            # Stems are saved by StemSplitter under <upload root>/<song_name>/<stem>.wav
+            song_dir = f"{upload_output_root(file)}/{get_song_name(file)}"
+            missing = [s for s in selected if not os.path.exists(f"{song_dir}/{s}.wav")]
+            if missing:
+                raise gr.Error(
+                    f"Stems not found ({', '.join(missing)}). Split the song first, then combine."
+                )
+
+            # Stems share length and sample rate, so mixing is a plain sum
+            combined, samplerate = None, None
             for stem_name in selected:
-                path = f"./output/{stem_name}.wav"
-                if os.path.exists(path):
-                    seg = AudioSegment.from_file(path)
-                    if combined is None:
-                        combined = seg
-                    else:
-                        combined = combined.overlay(seg)
+                audio, samplerate = sf.read(f"{song_dir}/{stem_name}.wav", dtype="float32")
+                combined = audio if combined is None else combined + audio
 
-            output_path = "./output/combined.wav"
-            if combined:
-                combined.export(output_path, format="wav")
-                return output_path
-            return None
+            # Named per selection so different combinations don't overwrite each other
+            name = "-".join(s for s in STEM_ORDER if s in selected)
+            output_path = f"{song_dir}/combined-{name}.wav"
+            # float WAV so summed peaks above 1.0 aren't clipped
+            sf.write(output_path, combined, samplerate, subtype="FLOAT")
+            return output_path
 
         combine_button.click(
             combine_stems, inputs=[audio_input, stem_selector], outputs=combined_output

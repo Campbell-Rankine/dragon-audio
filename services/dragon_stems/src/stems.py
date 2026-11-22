@@ -80,10 +80,12 @@ class _BaseStemSplitter(ABC):
         assert os.path.exists(path)
 
         waveform, audio_sr = torchaudio.load(path)
-        if not audio_sr == self.sample_rate:
-            raise ValueError(
-                f"Sample rate for song={audio_sr} does not match model sample rate={self.sample_rate}"
+        if audio_sr != self.sample_rate:
+            self.log(f"Resampling song from {audio_sr}Hz to model rate {self.sample_rate}Hz")
+            waveform = torchaudio.functional.resample(
+                waveform, orig_freq=audio_sr, new_freq=self.sample_rate
             )
+            audio_sr = self.sample_rate
 
         mix = deepcopy(waveform)
         if normalize:
