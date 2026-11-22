@@ -53,7 +53,7 @@ From this folder (`services/dragon_stems`), upload everything except local junk:
 
 ```bash
 cd services/dragon_stems
-hf upload campbell-rankine/dragon-stems . . \
+hf upload campbell-rankine/spectra-stems . . \
   --repo-type space \
   --exclude ".venv/*" --exclude "output/*" --exclude "**/__pycache__/*" \
   --exclude "*.wav" --exclude "*.mp3"
