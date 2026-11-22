@@ -8,12 +8,9 @@ def get_song_name(path: str):
 
 
 def mkdir_if_not_exist(path: str, subdirs=None):
-    if path.endswith("/"):
-        path = path[:-1]
-    if not os.path.exists(path):
-        os.mkdir(path)
-    if not subdirs is None:
+    path = path.rstrip("/")
+    os.makedirs(path, exist_ok=True)
+    if subdirs is not None:
         assert isinstance(subdirs, list)
         for subdir in subdirs:
-            if not os.path.exists(f"{path}/{subdir}"):
-                os.mkdir(f"{path}/{subdir}")
+            os.makedirs(f"{path}/{subdir}", exist_ok=True)
