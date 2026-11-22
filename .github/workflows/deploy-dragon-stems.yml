@@ -15,7 +15,7 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          hf upload campbell-rankine/spectra-stems . . \
+          hf upload campbell-rankine/spectra-stem . . \
             --repo-type space \
             --exclude ".venv/*" --exclude "output/*" --exclude "**/__pycache__/*" \
             --exclude "*.wav" --exclude "*.mp3"
