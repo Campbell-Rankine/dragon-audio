@@ -1,0 +1,21 @@
+name: Deploy dragon_stems to HF Spaces
+on:
+  push:
+    branches: [main]
+    paths: ["services/dragon_stems/**"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -U huggingface_hub
+      - working-directory: services/dragon_stems
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          hf upload campbell-rankine/dragon-stems . . \
+            --repo-type space \
+            --exclude ".venv/*" --exclude "output/*" --exclude "**/__pycache__/*" \
+            --exclude "*.wav" --exclude "*.mp3"
