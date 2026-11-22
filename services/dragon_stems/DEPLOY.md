@@ -47,6 +47,8 @@ Spaces build their own image). They're still there for running on your own box.
 
 ## Deploy
 
+**NOTE**: Can just push to git
+
 From this folder (`services/dragon_stems`), upload everything except local junk:
 
 ```bash
